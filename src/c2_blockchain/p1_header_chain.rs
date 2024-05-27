@@ -25,12 +25,24 @@ pub struct Header {
 impl Header {
     /// Returns a new valid genesis header.
     fn genesis() -> Self {
-        todo!("Exercise 1")
+        Header {
+            parent: 0x0000,
+            height: 0,
+            extrinsics_root: (),
+            state_root: (),
+            consensus_digest: (),
+        }
     }
 
     /// Create and return a valid child header.
     fn child(&self) -> Self {
-        todo!("Exercise 2")
+        Header {
+            parent: hash(&self.parent),
+            height: self.height + 1,
+            extrinsics_root: (),
+            state_root: (),
+            consensus_digest: (),
+        }
     }
 
     /// Verify that all the given headers form a valid chain from this header to the tip.
@@ -38,7 +50,13 @@ impl Header {
     /// This method may assume that the block on which it is called is valid, but it
     /// must verify all of the blocks in the slice;
     fn verify_sub_chain(&self, chain: &[Header]) -> bool {
-        todo!("Exercise 3")
+        let genesis = Header::genesis();
+        for header in chain {
+            if !hash(&header.parent) == header.child().parent {
+                return false;
+            }
+        }
+        true
     }
 }
 
@@ -46,14 +64,25 @@ impl Header {
 
 /// Build and return a valid chain with exactly five blocks including the genesis block.
 fn build_valid_chain_length_5() -> Vec<Header> {
-    todo!("Exercise 4")
+    let genesis = Header::genesis();
+    let child_1 = genesis.child();
+    let grand_child_2 = child_1.child();
+    let mega_child_3 = grand_child_2.child();
+    let uber_child_4 = mega_child_3.child();
+    vec![genesis, child_1, grand_child_2, mega_child_3, uber_child_4]
 }
 
 /// Build and return a chain with at least three headers.
 /// The chain should start with a proper genesis header,
 /// but the entire chain should NOT be valid.
 fn build_an_invalid_chain() -> Vec<Header> {
-    todo!("Exercise 5")
+    let genesis = Header::genesis();
+    let mut fake_child_1 = genesis.child();
+    let mut fake_grand_child_2 = genesis.child();
+
+    fake_child_1.height = 12;
+
+    vec![genesis, fake_child_1, fake_grand_child_2]
 }
 
 // To run these tests: `cargo test bc_1
