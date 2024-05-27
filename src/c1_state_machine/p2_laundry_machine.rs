@@ -35,12 +35,47 @@ pub enum ClothesAction {
     Dry,
 }
 
+// fn is_tattered(life: &u64) -> Option<ClothesState> {
+//     if (life - 1) {
+//         return None;
+//     };
+//     return Some(ClothesState::Tattered);
+// }
+
 impl StateMachine for ClothesMachine {
     type State = ClothesState;
     type Transition = ClothesAction;
 
     fn next_state(starting_state: &ClothesState, t: &ClothesAction) -> ClothesState {
-        todo!("Exercise 3")
+        match t {
+            ClothesAction::Wear => match starting_state {
+                ClothesState::Clean(life) if (life - 1 == 0) => ClothesState::Tattered,
+                ClothesState::Clean(life) => ClothesState::Dirty(life - 1),
+                ClothesState::Dirty(life) if (life - 1 == 0) => ClothesState::Tattered,
+                ClothesState::Dirty(life) => ClothesState::Dirty(life - 1),
+                ClothesState::Wet(life) if (life - 1 == 0) => ClothesState::Tattered,
+                ClothesState::Wet(life) => ClothesState::Dirty(life - 1),
+                _ => ClothesState::Tattered,
+            },
+            ClothesAction::Wash => match starting_state {
+                ClothesState::Clean(life) if (life - 1 == 0) => ClothesState::Tattered,
+                ClothesState::Clean(life) => ClothesState::Wet(life - 1),
+                ClothesState::Dirty(life) if (life - 1 == 0) => ClothesState::Tattered,
+                ClothesState::Dirty(life) => ClothesState::Wet(life - 1),
+                ClothesState::Wet(life) if (life - 1 == 0) => ClothesState::Tattered,
+                ClothesState::Wet(life) => ClothesState::Wet(life - 1),
+                _ => ClothesState::Tattered,
+            },
+            ClothesAction::Dry => match starting_state {
+                ClothesState::Clean(life) if (life - 1 == 0) => ClothesState::Tattered,
+                ClothesState::Clean(life) => ClothesState::Clean(life - 1),
+                ClothesState::Dirty(life) if (life - 1 == 0) => ClothesState::Tattered,
+                ClothesState::Dirty(life) => ClothesState::Dirty(life - 1),
+                ClothesState::Wet(life) if (life - 1 == 0) => ClothesState::Tattered,
+                ClothesState::Wet(life) => ClothesState::Clean(life - 1),
+                _ => ClothesState::Tattered,
+            },
+        }
     }
 }
 
