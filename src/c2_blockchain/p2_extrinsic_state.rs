@@ -31,12 +31,24 @@ pub struct Header {
 impl Header {
     /// Returns a new valid genesis header.
     fn genesis() -> Self {
-        todo!("Exercise 1")
+        Header {
+            parent: 0x0000,
+            height: 0,
+            extrinsic: 0,
+            state: 0,
+            consensus_digest: (),
+        }
     }
 
     /// Create and return a valid child header.
     fn child(&self, extrinsic: u64) -> Self {
-        todo!("Exercise 2")
+        Header {
+            parent: hash(&self.parent),
+            height: self.height + 1,
+            extrinsic: self.extrinsic + 1,
+            state: self.state + extrinsic,
+            consensus_digest: (),
+        }
     }
 
     /// Verify that all the given headers form a valid chain from this header to the tip.
@@ -48,7 +60,13 @@ impl Header {
     /// So in order for a block to verify, we must have that relationship between the extrinsic,
     /// the previous state, and the current state.
     fn verify_sub_chain(&self, chain: &[Header]) -> bool {
-        todo!("Exercise 3")
+        let genesis = Header::genesis();
+        for header in chain {
+            if !hash(&header.parent) == header.child(header.extrinsic).parent {
+                return false;
+            }
+        }
+        true
     }
 }
 
@@ -56,7 +74,12 @@ impl Header {
 
 /// Build and return a valid chain with the given number of blocks.
 fn build_valid_chain(n: u64) -> Vec<Header> {
-    todo!("Exercise 4")
+    let genesis = Header::genesis();
+    let child_1 = genesis.child(genesis.extrinsic);
+    let grand_child_2 = child_1.child(child_1.extrinsic);
+    let mega_child_3 = grand_child_2.child(grand_child_2.extrinsic);
+    let uber_child_4 = mega_child_3.child(mega_child_3.extrinsic);
+    vec![genesis, child_1, grand_child_2, mega_child_3, uber_child_4]
 }
 
 /// Build and return a chain with at least three headers.
